@@ -16,3 +16,14 @@ echo "MYSQL_DATABASE=example" >> .env
 echo "MYSQL_ROOT_PASSWORD=123456" >> .env
 docker-compose up -d
 ```
+
+### Update
+To get the most recent version of this repo run:
+
+```bash
+git fetch --all && \
+git reset --hard origin/master && \
+docker-compose pull && \
+docker-compose down && \
+docker-compose up -d
+```
