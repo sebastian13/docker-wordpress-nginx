@@ -10,8 +10,12 @@ services:
       - ./wordpress:/var/www/html
       - ./php/conf.d/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
     environment:
-      - WORDPRESS_DB_NAME=${MYSQL_DATABASE}
-      - WORDPRESS_DB_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
+      WORDPRESS_DB_USER: ${MYSQL_USER}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+      WORDPRESS_CONFIG_EXTRA: |
+        /* Multisite */
+        define('WP_ALLOW_MULTISITE', true );
     depends_on:
       - mysql
 
@@ -34,8 +38,10 @@ services:
       - ./nginx/snippets:/etc/nginx/snippets:ro
       - ./wordpress:/var/www/html:ro
     networks:
-      - default
-      - proxy-tier   
+      default:
+      proxy-tier:
+        aliases:
+          - example.com
 
 networks:
   proxy-tier:

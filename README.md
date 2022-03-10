@@ -12,8 +12,10 @@ This is a best practise docker-compose file to start a [WordPress Docker Contain
 
 ```bash
 git clone https://github.com/sebastian13/docker-wordpress-nginx.git .
-echo "MYSQL_DATABASE=example" >> .env
+echo "MYSQL_DATABASE=wordpress" >> .env
 echo "MYSQL_ROOT_PASSWORD=123456" >> .env
+echo "MYSQL_USER=wordpress" >> .env
+echo "MYSQL_PASSWORD=123456" >> .env
 docker-compose up -d
 ```
 
