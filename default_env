@@ -1,0 +1,25 @@
+# PHP & FPM
+PHP_CONFD=./php/conf.d
+PHPFPM_CONFD=./php-fpm/php-fpm.d
+PHP_VERSION=8.3
+
+# Database
+MYSQL_CONFD=./mysql/conf.d
+MYSQL_DATABASE=wordpress
+MYSQL_ROOT_PASSWORD=
+MYSQL_USER=wordpress
+MYSQL_PASSWORD=
+MARIADB_VERSION=11.5
+REDIS_VERSION=8.4
+
+# Defines the public URL path where phpMyAdmin is accessible.
+# This ensures all internal links and redirects include the /pma/ prefix.
+PMA_ABSOLUTE_URI="https://example.com/pma/"
+
+# Wordpress
+WORDPRESS_CPUS=2
+WORDPRESS_MEMLIMIT=4g
+WORKDIR=/var/www/html
+
+# Set Timezone
+TZ=Europe/Vienna

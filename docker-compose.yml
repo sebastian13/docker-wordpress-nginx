@@ -1,49 +1,94 @@
-version: '3'
-
 services:
   wordpress:
-    image: wordpress:fpm
+    image: wordpress:php${PHP_VERSION}-fpm-alpine
     restart: always
     expose:
       - '9000'
     volumes:
-      - ./wordpress:/var/www/html
-      - ./php/conf.d/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
+      - ./wordpress:${WORKDIR}
+      - ${PHP_CONFD}/custom.ini:/usr/local/etc/php/conf.d/zz-custom.ini:ro
+      - ${PHPFPM_CONFD}/zz-www.conf:/usr/local/etc/php-fpm.d/zz-www.conf:ro
+    working_dir: ${WORKDIR}
+    cpus: "${WORDPRESS_CPUS}"
+    mem_limit: ${WORDPRESS_MEMLIMIT}
+    env_file: .env-wordpress
     environment:
+      TZ: ${TZ}
+      WORDPRESS_DB_HOST: mysql
       WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
       WORDPRESS_DB_USER: ${MYSQL_USER}
       WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
       WORDPRESS_CONFIG_EXTRA: |
         /* Multisite */
-        define('WP_ALLOW_MULTISITE', true );
+        define('WP_ALLOW_MULTISITE', false);
     depends_on:
       - mysql
 
+  wp-cli:
+    image: wordpress:cli-php${PHP_VERSION}
+    restart: "no"
+    profiles:
+      - cli
+    volumes:
+      - ./wordpress:${WORKDIR}
+      - ${PHP_CONFD}/custom.ini:/usr/local/etc/php/conf.d/zz-custom.ini:ro
+    working_dir: ${WORKDIR}
+    env_file: .env-wordpress
+    environment:
+      TZ: ${TZ}
+      WORDPRESS_DB_HOST: mysql
+      WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
+      WORDPRESS_DB_USER: ${MYSQL_USER}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+    depends_on:
+      - mysql
+    networks:
+      default:
+    command: --info
+    user: 33:33
+
   mysql:
-    image: mariadb
+    image: mariadb:${MARIADB_VERSION}
     restart: always
     volumes:
       - ./datadir:/var/lib/mysql
+      - ${MYSQL_CONFD}:/etc/mysql/conf.d:ro
     env_file: .env
+
+  redis:
+    image: redis:${REDIS_VERSION}-alpine
+    restart: always
+    expose:
+      - '6379'
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
 
   nginx:
     image: nginx
     restart: always
-    expose:
-      - '80'
     depends_on:
       - wordpress
+    environment:
+      TZ: ${TZ}
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./nginx/snippets:/etc/nginx/snippets:ro
       - ./wordpress:/var/www/html:ro
     networks:
       default:
-      proxy-tier:
+      www-network:
         aliases:
-          - example.com
+          - example-com-nginx
+
+volumes:
+  # Can be deleted at any time. Persistence is not required.
+  redis-data:
 
 networks:
-  proxy-tier:
-    external:
-      name: www-network
+  www-network:
+    external: true

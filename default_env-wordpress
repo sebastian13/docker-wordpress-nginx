@@ -1,0 +1,13 @@
+# WordPress Site URL
+WP_HOME="https://example.com"
+
+# Unique auth keys and salts
+# Genereted on https://api.wordpress.org/secret-key/1.1/salt/
+WORDPRESS_AUTH_KEY='<KEY>'
+WORDPRESS_SECURE_AUTH_KEY='<KEY>'
+WORDPRESS_LOGGED_IN_KEY='<KEY>'
+WORDPRESS_NONCE_KEY='<KEY>'
+WORDPRESS_AUTH_SALT='<KEY>'
+WORDPRESS_SECURE_AUTH_SALT='<KEY>'
+WORDPRESS_LOGGED_IN_SALT='<KEY>'
+WORDPRESS_NONCE_SALT='<KEY>'

@@ -1,0 +1,20 @@
+# ┌──────────────────────────┐
+# │                          │
+# │       Cronjobs for       │
+# │    Wordpress Website     │
+# │                          │
+# └──────────────────────────┘
+# 
+# Symlink this file in /etc/cron.d/ like this:
+# ln -s /docker/wordpress-website/cron /etc/cron.d/wordpress-website
+# /etc/init.d/cron reload
+#
+
+MAILFROM="cron-example-com@example.com"
+MAILTO="alerts+example.com@example.com"
+
+# Wordpress Cron
+*/5 * * * * root cd /docker/wordpress-website && docker --log-level error compose --progress=quiet run --rm --quiet-pull --no-TTY wp-cli wp cron event run --due-now --quiet && curl -fsS -m 10 --retry 5 -o /dev/null https://healthchecks.example.com/ping/xxx
+
+# Create DB-Dump
+41 5 * * * root chronic /docker/wordpress-website/docker-mariadb-dump.sh && curl -fsS -m 10 --retry 5 -o /dev/null https://healthchecks.example.com/ping/xxx
