@@ -83,7 +83,7 @@ services:
       default:
       www-network:
         aliases:
-          - example-com-nginx
+          - ${NW_ALIAS}
 
 volumes:
   # Can be deleted at any time. Persistence is not required.
